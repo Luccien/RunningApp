@@ -1,6 +1,7 @@
 package com.androiddevs.runningappyt.ui.fragments
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.*
 import androidx.core.view.get
@@ -129,6 +130,7 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
     }
 
     private fun showCancelTrackingDialog() {
+        //testInsertingARun()  ////////// testing
         val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme)
             .setTitle("Cancel the Run?")
             .setMessage("Are you sure to cancel the current run and delete all its data?")
@@ -142,6 +144,21 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
             .create()
         dialog.show()
     }
+
+
+    // ------------------------ TESTINGG
+    private fun testInsertingARun(){
+        //endRunAndSaveToDb()
+        /*
+        var img: Bitmap? = null,
+        var timestamp: Long = 0L,
+        var avgSpeedInKMH: Float = 0f,
+        var distanceInMeters: Int = 0,
+        var timeInMillis: Long = 0L,
+        var caloriesBurned: Int = 0
+*/
+    }
+    // ----------------------- TESTING
 
     private fun stopRun() {
         sendCommandToService(ACTION_STOP_SERVICE)
@@ -189,12 +206,37 @@ class TrackingFragment : Fragment(R.layout.fragment_tracking) {
         )
     }
 
+
     private fun endRunAndSaveToDb() {
+
+            var distanceInMeters = 0
+            distanceInMeters = 800 /// TESTING
+
+            val avgSpeed = round((distanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
+            val dateTimestamp = Calendar.getInstance().timeInMillis
+            val caloriesBurned = ((distanceInMeters / 1000f) * weight).toInt()
+            val run = Run(null, dateTimestamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned)
+            viewModel.insertRun(run)
+            Snackbar.make(
+                requireActivity().findViewById(R.id.rootView),
+                "Run saved successfully",
+                Snackbar.LENGTH_LONG
+            ).show()
+            stopRun()
+
+    }
+
+
+
+    private fun endRunAndSaveToDbORGINAL() {
         map?.snapshot { bmp ->
             var distanceInMeters = 0
+
             for(polyline in pathPoints) {
                 distanceInMeters += TrackingUtility.calculatePolylineLength(polyline).toInt()
             }
+
+
             val avgSpeed = round((distanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
             val dateTimestamp = Calendar.getInstance().timeInMillis
             val caloriesBurned = ((distanceInMeters / 1000f) * weight).toInt()
